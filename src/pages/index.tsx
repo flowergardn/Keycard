@@ -5,8 +5,6 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const url = api.example.getURL.useQuery();
-
   return (
     <>
       <Head>
@@ -35,9 +33,6 @@ const Home: NextPage = () => {
             </Link>
           </div>
           <p className="text-2xl text-white">Get started</p>
-          <code className="border-2 border-[#7162b0] bg-[#443867] p-4 font-mono text-gray-200">
-            {url.data ? `${url.data}/api/bot` : "Loading..."}
-          </code>
         </div>
       </main>
     </>

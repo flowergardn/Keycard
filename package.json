@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.14.0",
+    "@clerk/themes": "^1.5.1",
     "@discordjs/builders": "^1.6.1",
     "@discordjs/rest": "^1.5.0",
     "@prisma/client": "^4.9.0",
