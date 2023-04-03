@@ -4,6 +4,9 @@ on: [push, pull_request]
 
 env:
   DATABASE_URL: "https://fake.com"
+  DISCORD_CLIENT_ID: "astrid is pretty"
+  DISCORD_BOT_TOKEN: "<3"
+  DISCORD_PUBLIC_KEY: "i love her"
 
 jobs:
   build:
