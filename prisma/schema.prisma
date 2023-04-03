@@ -26,6 +26,7 @@ model Server {
     // Discord server ID
     id               String    @id
     // Discord Role ID to give upon successful verification
-    verificationRole String
+    verificationRole String?
+    loggingChannel   String?
     sessions         Session[]
 }

@@ -8,18 +8,32 @@ import {
 import { createTRPCContext } from "~/server/api/trpc";
 import { appRouter } from "~/server/api/root";
 import { EmbedBuilder, ButtonBuilder } from "@discordjs/builders";
-
-function parseColor(color: string) {
-  let baseColor = color;
-  baseColor = color.replace("#", "");
-  return parseInt(baseColor, 16);
-}
+import { parseColor } from "../utils/general";
+import { prisma } from "~/server/db";
 
 export const execute = async (opt: CommandOptions) => {
   const { res: response, req: request } = opt;
 
   const ctx = createTRPCContext({ req: request, res: response });
   const trpc = appRouter.createCaller(ctx);
+
+  const server = await prisma.server.findFirst({
+    where: {
+      id: request.body.guild_id,
+    },
+  });
+
+  if (!server) {
+    response.json({
+      type: InteractionResponseType.ChannelMessageWithSource,
+      data: {
+        content:
+          "Keycard has not yet been setup for this server. Tell a server admin to do `/settings role`",
+        flags: MessageFlags.Ephemeral,
+      },
+    });
+    return
+  }
 
   const member = request.body.member as APIGuildMember;
 
@@ -43,7 +57,7 @@ export const execute = async (opt: CommandOptions) => {
   const button = new ButtonBuilder()
     .setStyle(ButtonStyle.Link)
     .setLabel("Verify")
-    .setURL(`http://127.0.0.1:3001/v/${session.id}`);
+    .setURL(`http://127.0.0.1/v/${session.id}`);
 
   response.json({
     type: InteractionResponseType.ChannelMessageWithSource,

@@ -111,6 +111,8 @@ export const sessionRouter = createTRPCRouter({
         },
       });
 
+      // todo: send log to the specified server logging channel
+
       return {
         success: true,
       };

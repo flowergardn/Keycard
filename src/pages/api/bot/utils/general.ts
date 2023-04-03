@@ -17,3 +17,9 @@ export const getArgument = (
   if (_arg.length === 1) return _arg.shift() as Option;
   else return null;
 };
+
+export function parseColor(color: string) {
+  let baseColor = color;
+  baseColor = color.replace("#", "");
+  return parseInt(baseColor, 16);
+}
