@@ -25,6 +25,7 @@ export const execute = async (opt: CommandOptions) => {
 
   const session = await trpc.sessions.create({
     discordId: member.user?.id ?? "",
+    serverId: request.body.guild_id,
   });
 
   const embed = new EmbedBuilder()
@@ -42,7 +43,7 @@ export const execute = async (opt: CommandOptions) => {
   const button = new ButtonBuilder()
     .setStyle(ButtonStyle.Link)
     .setLabel("Verify")
-    .setURL(`https://127.0.0.1:3001/v/${session.id}`);
+    .setURL(`http://127.0.0.1:3001/v/${session.id}`);
 
   response.json({
     type: InteractionResponseType.ChannelMessageWithSource,

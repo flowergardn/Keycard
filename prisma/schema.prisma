@@ -6,12 +6,26 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 model Session {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     discordId String
+    completed Boolean  @default(false)
+    Server    Server?  @relation(fields: [serverId], references: [id])
+    serverId  String?
+
+    @@index([serverId])
+}
+
+model Server {
+    // Discord server ID
+    id               String    @id
+    // Discord Role ID to give upon successful verification
+    verificationRole String
+    sessions         Session[]
 }
