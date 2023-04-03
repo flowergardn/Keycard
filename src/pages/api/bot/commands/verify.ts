@@ -45,8 +45,7 @@ export const execute = async (opt: CommandOptions) => {
     .setURL(`https://127.0.0.1:3001/v/${session.id}`);
 
   response.json({
-    type: InteractionResponseType.Channel
-    MessageWithSource,
+    type: InteractionResponseType.ChannelMessageWithSource,
     data: {
       embeds: [embed.toJSON()],
       components: [
