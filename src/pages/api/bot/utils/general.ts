@@ -1,4 +1,7 @@
+import axios from "axios";
+import { APIEmbed, APIMessageActionRowComponent } from "discord-api-types/v10";
 import { Interaction } from "~/pages/api/bot/index";
+import { prisma } from "~/server/db";
 
 interface Option {
   name: string;
@@ -22,4 +25,31 @@ export function parseColor(color: string) {
   let baseColor = color;
   baseColor = color.replace("#", "");
   return parseInt(baseColor, 16);
+}
+
+export async function sendLog(
+  guildId: string,
+  log: {
+    content?: string;
+    embeds?: APIEmbed[];
+    components?: APIMessageActionRowComponent[];
+  }
+) {
+  const server = await prisma.server.findFirst({
+    where: {
+      id: guildId,
+    },
+  });
+
+  if (!server || !server?.loggingChannel) return;
+
+  await axios.post(
+    `https://discord.com/api/v10/channels/${server.loggingChannel}/messages`,
+    log,
+    {
+      headers: {
+        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+      },
+    }
+  );
 }

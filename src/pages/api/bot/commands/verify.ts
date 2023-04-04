@@ -57,7 +57,7 @@ export const execute = async (opt: CommandOptions) => {
   const button = new ButtonBuilder()
     .setStyle(ButtonStyle.Link)
     .setLabel("Verify")
-    .setURL(`http://127.0.0.1/v/${session.id}`);
+    .setURL(`http://127.0.0.1:3001/v/${session.id}`);
 
   response.json({
     type: InteractionResponseType.ChannelMessageWithSource,

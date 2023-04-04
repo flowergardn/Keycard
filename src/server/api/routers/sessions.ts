@@ -1,6 +1,8 @@
+import { EmbedBuilder, inlineCode, userMention } from "@discordjs/builders";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
 import { z } from "zod";
+import { parseColor, sendLog } from "~/pages/api/bot/utils/general";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -112,6 +114,21 @@ export const sessionRouter = createTRPCRouter({
       });
 
       // todo: send log to the specified server logging channel
+
+      const successEmbed = new EmbedBuilder()
+        .setColor(parseColor("#9beba7"))
+        .setTimestamp(Date.now())
+        .setTitle("User Verified");
+      successEmbed.addFields([
+        {
+          name: "User",
+          value:
+            `${userMention(session.discordId)} ` +
+            inlineCode(`(${session.discordId})`),
+        },
+      ]);
+
+      sendLog(session.serverId, { embeds: [successEmbed.toJSON()] });
 
       return {
         success: true,
