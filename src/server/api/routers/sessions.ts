@@ -1,8 +1,14 @@
 import { EmbedBuilder, inlineCode, userMention } from "@discordjs/builders";
+import { Account } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
+import {
+  APIEmbedField,
+  RESTGetAPIGuildMemberResult,
+} from "discord-api-types/v10";
 import { z } from "zod";
-import { parseColor, sendLog } from "~/pages/api/bot/utils/general";
+import { parseColor, sendLog, hash } from "~/pages/api/bot/utils/general";
+import * as async from "async";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -33,6 +39,34 @@ function verifyCaptcha(token: string) {
     });
 }
 
+// Function to parse through an array list of alts, and only return the ones present in the current server.
+async function checkAlts(accounts: Account[], guildId: string) {
+  const alts: RESTGetAPIGuildMemberResult[] = [];
+
+  await async.each(accounts, async function (data) {
+    const url = `https://discord.com/api/v10/guilds/${guildId}/members/${data.id}`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+        },
+      });
+
+      if (response.ok) {
+        const body = await response.json();
+        console.log(`Response for ID ${data.id}: ${body}`);
+
+        alts.push(body);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  return alts;
+}
+
 export const sessionRouter = createTRPCRouter({
   create: publicProcedure
     .input(z.object({ discordId: z.string(), serverId: z.string() }))
@@ -56,9 +90,17 @@ export const sessionRouter = createTRPCRouter({
       return session;
     }),
   verify: publicProcedure
-    .input(z.object({ sessionId: z.string(), captchaToken: z.string() }))
+    .input(
+      z.object({
+        sessionId: z.string(),
+        captchaToken: z.string(),
+        ip: z.string(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       await verifyCaptcha(input.captchaToken);
+
+      const ip = hash(input.ip);
 
       const session = await ctx.prisma.session.findFirst({
         where: {
@@ -113,20 +155,63 @@ export const sessionRouter = createTRPCRouter({
         },
       });
 
-      // todo: send log to the specified server logging channel
+      // upsert to update the users IP if it exists, otherwise just create it.
+      await ctx.prisma.account.upsert({
+        where: {
+          id: session.discordId,
+        },
+        update: {
+          ip,
+        },
+        create: {
+          ip,
+          id: session.discordId,
+        },
+      });
+
+      const alts = await ctx.prisma.account.findMany({
+        where: {
+          ip,
+        },
+      });
 
       const successEmbed = new EmbedBuilder()
         .setColor(parseColor("#9beba7"))
         .setTimestamp(Date.now())
         .setTitle("User Verified");
-      successEmbed.addFields([
+
+      const fields: APIEmbedField[] = [
         {
           name: "User",
           value:
             `${userMention(session.discordId)} ` +
             inlineCode(`(${session.discordId})`),
         },
-      ]);
+      ];
+
+      const altsInServer = await checkAlts(alts, session.serverId);
+
+      if (altsInServer.length > 1) {
+        console.log(JSON.stringify(altsInServer, null, 4));
+        successEmbed.setDescription(
+          `This user has ${altsInServer.length} alt(s).`
+        );
+
+        const formattedAlts = altsInServer.map(
+          (alt) =>
+            alt.user &&
+            `${alt.user.username}#${alt.user.discriminator} (${inlineCode(
+              alt.user.id
+            )})`
+        );
+
+        fields.push({
+          name: "Alts",
+          value: formattedAlts.join("\n"),
+        });
+      }
+
+      successEmbed.addFields(fields);
 
       sendLog(session.serverId, { embeds: [successEmbed.toJSON()] });
 

@@ -30,3 +30,8 @@ model Server {
     loggingChannel   String?
     sessions         Session[]
 }
+
+model Account {
+    id String @id
+    ip String
+}

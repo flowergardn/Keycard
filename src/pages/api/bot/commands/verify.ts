@@ -32,7 +32,7 @@ export const execute = async (opt: CommandOptions) => {
         flags: MessageFlags.Ephemeral,
       },
     });
-    return
+    return;
   }
 
   const member = request.body.member as APIGuildMember;

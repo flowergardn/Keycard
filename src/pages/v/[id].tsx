@@ -3,6 +3,35 @@ import ErrorPage from "~/components/ErrorPage";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { api } from "~/utils/api";
 import Turnstile from "react-turnstile";
+import { useQuery } from "@tanstack/react-query";
+
+interface IPRiskResponse {
+  status: string;
+  ip: string;
+  data_center: true;
+  network: {
+    route: string;
+    as_number: number;
+    as_org: string;
+    as_org_alt: string;
+  };
+  geo: {
+    continent: string;
+    continent_code: string;
+    country: string;
+    country_code: string;
+    country_flag_emoji: string;
+    is_in_eu: true;
+    region: string;
+    region_code: string;
+    city: string;
+    postal_code: string;
+    time_zone: string;
+    latitude: number;
+    longitude: number;
+    accuracy_radius: number;
+  };
+}
 
 const Verification: NextPage<{ id: string }> = ({ id }) => {
   const { data, isLoading: sessionLoading } = api.sessions.fetch.useQuery({
@@ -11,15 +40,25 @@ const Verification: NextPage<{ id: string }> = ({ id }) => {
   const { isError, error, isSuccess, mutate } =
     api.sessions.verify.useMutation();
 
+  const { data: ipRisk } = useQuery({
+    queryKey: ["ipInfo"],
+    queryFn: () => fetch("/api/ip").then((res) => res.json()),
+  });
+
   if (sessionLoading) return <>loading</>;
 
   if (!data)
     return <ErrorPage code={404} description={"Invalid session token"} />;
 
   const verify = (token: string) => {
+    const { ip } = ipRisk as IPRiskResponse;
+
+    if (!ip) return;
+
     mutate({
       captchaToken: token,
       sessionId: id,
+      ip,
     });
   };
 
@@ -31,7 +70,9 @@ const Verification: NextPage<{ id: string }> = ({ id }) => {
 
     if (isError) return <p className="py-3 text-xl">{error.message}</p>;
 
-    return <p className="py-3 text-xl">Making sure you&apos;re a good person...</p>;
+    return (
+      <p className="py-3 text-xl">Making sure you&apos;re a good person...</p>
+    );
   };
 
   return (

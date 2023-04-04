@@ -53,3 +53,19 @@ export async function sendLog(
     }
   );
 }
+
+const { SHA3 } = require("sha3");
+const SHA3Hash = new SHA3(512);
+
+/**
+ * Hashes a string
+ * @param {string} string - The string to hash (Required)
+ * @returns The decrypted string
+ */
+export function hash(string: string) {
+  SHA3Hash.update(string);
+  let result = SHA3Hash.digest("hex");
+  SHA3Hash.reset();
+  return result;
+}
+
