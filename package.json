@@ -2,6 +2,7 @@
   "name": "keycard",
   "version": "0.0.1",
   "private": true,
+  "license": "MPL-2.0",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
