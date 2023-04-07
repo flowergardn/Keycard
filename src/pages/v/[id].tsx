@@ -21,7 +21,7 @@ interface IPAPIResponse {
   currency: string;
   isp: string;
   org: string;
-  as: "AS7029 Windstream Communications LLC";
+  as: string;
   asname: string;
   mobile: boolean;
   proxy: boolean;
