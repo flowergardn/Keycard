@@ -13,6 +13,10 @@ const commands = [
     description: "Start a verification session.",
   },
   {
+    name: "keycard",
+    description: "View Keycard information",
+  },
+  {
     name: "settings",
     description: "Manage Keycard settings",
     options: [
