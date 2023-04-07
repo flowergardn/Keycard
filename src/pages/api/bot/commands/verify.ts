@@ -57,7 +57,7 @@ export const execute = async (opt: CommandOptions) => {
   const button = new ButtonBuilder()
     .setStyle(ButtonStyle.Link)
     .setLabel("Verify")
-    .setURL(`https://kc.astrid.sh/v/${session.id}`);
+    .setURL(`https://keycard.vercel.app/v/${session.id}`);
 
   response.json({
     type: InteractionResponseType.ChannelMessageWithSource,
