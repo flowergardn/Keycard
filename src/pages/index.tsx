@@ -1,12 +1,48 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 
+let defaults = {
+  title: "Keycard",
+  description: "A new era of Discord verification",
+  color: "#7ec8e3",
+};
+
+function Meta({
+  title = defaults.title,
+  description = defaults.description,
+  color = defaults.color,
+}) {
+  const url = "keycard.vercel.app";
+
+  return (
+    <>
+      <meta name="description" content={description ?? defaults.description} />
+      <meta property="og:url" content={url} />
+      <meta property="og:type" content="website" />
+      <meta property="theme-color" content={color ?? defaults.color} />
+      <meta property="og:title" content={title ?? defaults.title} />
+      <meta
+        property="og:description"
+        content={description ?? defaults.description}
+      />
+      <meta property="twitter:domain" content={url} />
+      <meta property="twitter:url" content={url} />
+      <meta name="twitter:title" content={title ?? defaults.title} />
+      <meta
+        name="twitter:description"
+        content={description ?? defaults.description}
+      />
+      <link rel="icon" href="/favicon.ico" />
+      <title>Keycard</title>
+    </>
+  );
+}
+
 const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Dripleaf</title>
-        <link rel="icon" href="/favicon.ico" />
+        <Meta />
       </Head>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content animate-fadeInUp flex-col lg:flex-row">
