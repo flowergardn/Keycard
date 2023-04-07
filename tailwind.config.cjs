@@ -1,13 +1,15 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const { withAnimations } = require("animated-tailwindcss");
+
+const config = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {},
   },
   daisyui: {
-    themes: [
-      "black"
-    ],
+    themes: ["black"],
   },
-  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  plugins: [require("daisyui")],
 };
+
+// @ts-ignore
+module.exports = withAnimations(config);
