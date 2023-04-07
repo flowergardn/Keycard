@@ -5,32 +5,27 @@ import { api } from "~/utils/api";
 import Turnstile from "react-turnstile";
 import { useQuery } from "@tanstack/react-query";
 
-interface IPRiskResponse {
+interface IPAPIResponse {
+  query: string;
   status: string;
-  ip: string;
-  data_center: true;
-  network: {
-    route: string;
-    as_number: number;
-    as_org: string;
-    as_org_alt: string;
-  };
-  geo: {
-    continent: string;
-    continent_code: string;
-    country: string;
-    country_code: string;
-    country_flag_emoji: string;
-    is_in_eu: true;
-    region: string;
-    region_code: string;
-    city: string;
-    postal_code: string;
-    time_zone: string;
-    latitude: number;
-    longitude: number;
-    accuracy_radius: number;
-  };
+  continent: string;
+  continentCode: string;
+  country: string;
+  countryCode: string;
+  region: string;
+  regionName: string;
+  city: string;
+  district: string;
+  zip: string;
+  timezone: string;
+  currency: string;
+  isp: string;
+  org: string;
+  as: "AS7029 Windstream Communications LLC";
+  asname: string;
+  mobile: boolean;
+  proxy: boolean;
+  hosting: boolean;
 }
 
 const Verification: NextPage<{ id: string }> = ({ id }) => {
@@ -40,7 +35,7 @@ const Verification: NextPage<{ id: string }> = ({ id }) => {
   const { isError, error, isSuccess, mutate } =
     api.sessions.verify.useMutation();
 
-  const { data: ipRisk } = useQuery({
+  const { data: ipInfo } = useQuery({
     queryKey: ["ipInfo"],
     queryFn: () => fetch("/api/ip").then((res) => res.json()),
   });
@@ -51,7 +46,7 @@ const Verification: NextPage<{ id: string }> = ({ id }) => {
     return <ErrorPage code={404} description={"Invalid session token"} />;
 
   const verify = (token: string) => {
-    const { ip } = ipRisk as IPRiskResponse;
+    const { query: ip } = ipInfo as IPAPIResponse;
 
     if (!ip) return;
 
