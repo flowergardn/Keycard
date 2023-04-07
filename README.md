@@ -12,4 +12,4 @@ This project was created with one goal in mind; Provide the ability for server s
 
 ## Invite
 
-You can invite the bot [here](https://hc.astrid.sh/api/invite)
+You can invite the bot [here](https://kc.astrid.sh/api/invite)
