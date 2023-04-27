@@ -192,9 +192,12 @@ export const sessionRouter = createTRPCRouter({
       const altsInServer = await checkAlts(alts, session.serverId);
 
       if (altsInServer.length > 1) {
+        const altAmount = altsInServer.length
+        const hasMultipleAlts = altAmount > 1
+
         console.log(JSON.stringify(altsInServer, null, 4));
         successEmbed.setDescription(
-          `This user has ${altsInServer.length} alt(s).`
+          `This user has ${altAmount} alt${hasMultipleAlts ? "s" : ""}.`   
         );
 
         const formattedAlts = altsInServer.map(
