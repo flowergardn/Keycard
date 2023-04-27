@@ -41,6 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+.package-lock.json
 # support yarn
 .yarn/*
 !.yarn/patches
